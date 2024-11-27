@@ -4,20 +4,20 @@ import (
 	"net/http"
 
 	"github.com/L4B0MB4/PRYVT/identification/pkg/aggregates"
-	"github.com/L4B0MB4/PRYVT/identification/pkg/helper"
 	models "github.com/L4B0MB4/PRYVT/identification/pkg/models/query"
-	"github.com/L4B0MB4/PRYVT/identification/pkg/query/authentication"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/store/repository"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/utils"
+	"github.com/PRYVT/utils/pkg/auth"
+	"github.com/PRYVT/utils/pkg/hash"
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
 	userRepo     *repository.UserRepository
-	tokenManager *authentication.TokenManager
+	tokenManager *auth.TokenManager
 }
 
-func NewUserController(userRepo *repository.UserRepository, tokenManager *authentication.TokenManager) *UserController {
+func NewUserController(userRepo *repository.UserRepository, tokenManager *auth.TokenManager) *UserController {
 	return &UserController{userRepo: userRepo, tokenManager: tokenManager}
 }
 
@@ -38,7 +38,7 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
-	hashedPw := helper.HashPassword(tokenReq.Password)
+	hashedPw := hash.HashPassword(tokenReq.Password)
 	if user.PasswordHash != hashedPw {
 
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

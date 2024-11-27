@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler/controller"
-	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler/middleware"
+	"github.com/PRYVT/utils/pkg/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
@@ -14,10 +14,10 @@ type HttpHandler struct {
 	httpServer     *http.Server
 	router         *gin.Engine
 	userController *controller.UserController
-	authMiddleware *middleware.AuthMiddleware
+	authMiddleware *auth.AuthMiddleware
 }
 
-func NewHttpHandler(c *controller.UserController, am *middleware.AuthMiddleware) *HttpHandler {
+func NewHttpHandler(c *controller.UserController, am *auth.AuthMiddleware) *HttpHandler {
 	r := gin.Default()
 	srv := &http.Server{
 		Addr:    "0.0.0.0" + ":" + "5517",

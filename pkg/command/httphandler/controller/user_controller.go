@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/L4B0MB4/PRYVT/identification/pkg/aggregates"
-	"github.com/L4B0MB4/PRYVT/identification/pkg/helper"
 	models "github.com/L4B0MB4/PRYVT/identification/pkg/models/command"
+	"github.com/PRYVT/utils/pkg/hash"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -57,7 +57,7 @@ func (ctrl *UserController) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userUuid := helper.GenerateGUID(m.Name)
+	userUuid := hash.GenerateGUID(m.Name)
 	ua, err := aggregates.NewUserAggregate(userUuid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
