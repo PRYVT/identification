@@ -68,7 +68,7 @@ jobs:
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
         with:
-          file: ".docker/query/Dockerfile"
+          file: "./docker/query/Dockerfile"
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/identification_query:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
       - name: Build without push
