@@ -34,11 +34,12 @@ func NewHttpHandler(c *controller.UserController, am *auth.AuthMiddleware) *Http
 }
 
 func (h *HttpHandler) RegisterRoutes() {
-	h.router.POST("/:userId/token", h.userController.GetToken)
+	h.router.POST("/authentication/token", h.userController.GetToken)
 	h.router.Use(h.authMiddleware.AuthenticateMiddleware)
 	{
-		h.router.GET("/:userId", h.userController.GetUser)
-		h.router.GET("/", h.userController.GetUsers)
+		h.router.POST("/authentication/refresh", h.userController.RefreshToken)
+		h.router.GET("users/:userId", h.userController.GetUser)
+		h.router.GET("users/", h.userController.GetUsers)
 	}
 }
 
