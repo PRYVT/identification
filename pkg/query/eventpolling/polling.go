@@ -4,25 +4,24 @@ import (
 	"time"
 
 	"github.com/L4B0MB4/EVTSRC/pkg/client"
-	"github.com/L4B0MB4/EVTSRC/pkg/models"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/store/repository"
 	"github.com/rs/zerolog/log"
 )
 
 type EventPolling struct {
-	client    *client.EventSourcingHttpClient
-	eventRepo *repository.EventRepository
-	userRepo  *repository.UserRepository
+	client       *client.EventSourcingHttpClient
+	eventRepo    *repository.EventRepository
+	eventHandler EventHanlder
 }
 
-func NewEventPolling(client *client.EventSourcingHttpClient, eventRepo *repository.EventRepository, userRepo *repository.UserRepository) *EventPolling {
-	if client == nil || eventRepo == nil || userRepo == nil {
+func NewEventPolling(client *client.EventSourcingHttpClient, eventRepo *repository.EventRepository, eventHandler EventHanlder) *EventPolling {
+	if client == nil || eventRepo == nil || eventHandler == nil {
 		return nil
 	}
-	return &EventPolling{client: client, eventRepo: eventRepo, userRepo: userRepo}
+	return &EventPolling{client: client, eventRepo: eventRepo, eventHandler: eventHandler}
 }
 
-func (ep *EventPolling) PollEvents(callback func(event models.Event) error) {
+func (ep *EventPolling) PollEvents() {
 
 	hadMoreThenZeroEvents := true
 	for {
@@ -44,7 +43,7 @@ func (ep *EventPolling) PollEvents(callback func(event models.Event) error) {
 
 		for _, event := range events {
 
-			err := callback(event)
+			err := ep.eventHandler.HandleEvent(event)
 			if err != nil {
 				log.Err(err).Msg("Error while processing event")
 				break

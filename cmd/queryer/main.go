@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/L4B0MB4/EVTSRC/pkg/client"
+	"github.com/L4B0MB4/PRYVT/identification/pkg/query/eventhandling"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/eventpolling"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler/controller"
@@ -41,8 +42,10 @@ func main() {
 	aut := auth.NewAuthMiddleware(tokenManager)
 	h := httphandler.NewHttpHandler(uc, aut)
 
-	eventPolling := eventpolling.NewEventPolling(c, eventRepo, userRepo)
-	go eventPolling.PollEvents(eventPolling.ProcessUserEvent)
+	userEventHandler := eventhandling.NewUserEventHandler(userRepo)
+
+	eventPolling := eventpolling.NewEventPolling(c, eventRepo, userEventHandler)
+	go eventPolling.PollEvents()
 
 	h.Start()
 }
