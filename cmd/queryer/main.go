@@ -42,7 +42,7 @@ func main() {
 	h := httphandler.NewHttpHandler(uc, aut)
 
 	eventPolling := eventpolling.NewEventPolling(c, eventRepo, userRepo)
-	go eventPolling.PollEvents()
+	go eventPolling.PollEvents(eventPolling.ProcessUserEvent)
 
 	h.Start()
 }

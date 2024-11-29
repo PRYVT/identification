@@ -4,9 +4,8 @@ import (
 	"time"
 
 	"github.com/L4B0MB4/EVTSRC/pkg/client"
-	"github.com/L4B0MB4/PRYVT/identification/pkg/aggregates"
+	"github.com/L4B0MB4/EVTSRC/pkg/models"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/store/repository"
-	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -23,7 +22,7 @@ func NewEventPolling(client *client.EventSourcingHttpClient, eventRepo *reposito
 	return &EventPolling{client: client, eventRepo: eventRepo, userRepo: userRepo}
 }
 
-func (ep *EventPolling) PollEvents() {
+func (ep *EventPolling) PollEvents(callback func(event models.Event) error) {
 
 	hadMoreThenZeroEvents := true
 	for {
@@ -44,18 +43,11 @@ func (ep *EventPolling) PollEvents() {
 		}
 
 		for _, event := range events {
-			if event.AggregateType == "user" {
-				ua, err := aggregates.NewUserAggregate(uuid.MustParse(event.AggregateId))
-				if err != nil {
-					log.Err(err).Msg("Error while creating user aggregate")
-					break
-				}
-				uI := aggregates.GetUserModelFromAggregate(ua)
-				err = ep.userRepo.AddOrReplaceUser(uI)
-				if err != nil {
-					log.Err(err).Msg("Error while adding or replacing user")
-					break
-				}
+
+			err := callback(event)
+			if err != nil {
+				log.Err(err).Msg("Error while processing event")
+				break
 			}
 		}
 		if len(events) == 0 {
