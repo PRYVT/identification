@@ -44,7 +44,7 @@ jobs:
         with:
           file: "./docker/command/Dockerfile"
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/identification_command:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_command:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
       - name: Build without push
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/development' && !startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
@@ -70,7 +70,7 @@ jobs:
         with:
           file: "./docker/query/Dockerfile"
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/identification_query:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_query:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
       - name: Build without push
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/development' && !startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
