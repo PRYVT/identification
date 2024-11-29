@@ -25,8 +25,13 @@ func NewEventPolling(client *client.EventSourcingHttpClient, eventRepo *reposito
 
 func (ep *EventPolling) PollEvents() {
 
+	hadMoreThenZeroEvents := true
 	for {
-		time.Sleep(50 * time.Millisecond)
+		if hadMoreThenZeroEvents {
+			time.Sleep(100 * time.Millisecond)
+		} else {
+			time.Sleep(500 * time.Millisecond)
+		}
 		eId, err := ep.eventRepo.GetLastEvent()
 		if err != nil {
 			log.Err(err).Msg("Error while getting last events")
@@ -54,8 +59,10 @@ func (ep *EventPolling) PollEvents() {
 			}
 		}
 		if len(events) == 0 {
+			hadMoreThenZeroEvents = true
 			continue
 		}
+		hadMoreThenZeroEvents = false
 		//will this break the db consistency if there are going to be multiple instances of this service?
 		// probably but if we dont a volume (that both instances use as a db file) this should be fine
 		err = ep.eventRepo.ReplaceEvent(events[len(events)-1].Id)

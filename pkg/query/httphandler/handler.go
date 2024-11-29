@@ -34,6 +34,7 @@ func NewHttpHandler(c *controller.UserController, am *auth.AuthMiddleware) *Http
 }
 
 func (h *HttpHandler) RegisterRoutes() {
+	h.router.Use(auth.CORSMiddleware())
 	h.router.POST("/authentication/token", h.userController.GetToken)
 	h.router.Use(h.authMiddleware.AuthenticateMiddleware)
 	{
