@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/L4B0MB4/EVTSRC/pkg/client"
+	tcpClient "github.com/L4B0MB4/EVTSRC/pkg/tcp/client"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/eventhandling"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/httphandler/controller"
@@ -46,7 +47,24 @@ func main() {
 	userEventHandler := eventhandling.NewUserEventHandler(userRepo)
 
 	eventPolling := eventpolling.NewEventPolling(c, eventRepo, userEventHandler)
-	go eventPolling.PollEvents()
 
+	tcpC, err := tcpClient.NewTcpEventClient()
+	if err != nil {
+		log.Error().Err(err).Msg("Unsuccessful initialization of tcp client")
+		return
+	}
+	channel := make(chan string, 1)
+	go tcpC.ListenForEvents(channel)
+
+	eventPolling.PollEventsUntilEmpty()
+	go func() {
+		for {
+			select {
+			case event := <-channel:
+				log.Info().Msgf("Received event: %s", event)
+				eventPolling.PollEventsUntilEmpty()
+			}
+		}
+	}()
 	h.Start()
 }

@@ -5,8 +5,8 @@ go 1.23.1
 require github.com/mattn/go-sqlite3 v1.14.24
 
 require (
-	github.com/L4B0MB4/EVTSRC v0.4.5 // indirect
-	github.com/PRYVT/utils v0.2.0 // indirect
+	github.com/L4B0MB4/EVTSRC v0.5.1 // indirect
+	github.com/PRYVT/utils v0.2.0-rc-2 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
