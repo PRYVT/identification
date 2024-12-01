@@ -13,12 +13,11 @@ import (
 )
 
 type UserController struct {
-	userRepo     *repository.UserRepository
-	tokenManager *auth.TokenManager
+	userRepo *repository.UserRepository
 }
 
-func NewUserController(userRepo *repository.UserRepository, tokenManager *auth.TokenManager) *UserController {
-	return &UserController{userRepo: userRepo, tokenManager: tokenManager}
+func NewUserController(userRepo *repository.UserRepository) *UserController {
+	return &UserController{userRepo: userRepo}
 }
 
 func (ctrl *UserController) GetToken(c *gin.Context) {
@@ -32,7 +31,7 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 	userUuid := hash.GenerateGUID(tokenReq.UserName)
 
 	user, err := ctrl.userRepo.GetUserById(userUuid)
-	if err != nil {
+	if err != nil || user == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
@@ -42,7 +41,7 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	token, err := ctrl.tokenManager.CreateToken(userUuid)
+	token, err := auth.CreateToken(userUuid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -52,12 +51,12 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 func (ctrl *UserController) RefreshToken(c *gin.Context) {
 
 	tokenStr := auth.GetTokenFromHeader(c)
-	userUuid, err := ctrl.tokenManager.GetUserUuidFromToken(tokenStr)
+	userUuid, err := auth.GetUserUuidFromToken(tokenStr)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	token, err := ctrl.tokenManager.CreateToken(userUuid)
+	token, err := auth.CreateToken(userUuid)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
