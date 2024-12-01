@@ -32,7 +32,7 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 	userUuid := hash.GenerateGUID(tokenReq.UserName)
 
 	user, err := ctrl.userRepo.GetUserById(userUuid)
-	if err != nil {
+	if err != nil || user == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
