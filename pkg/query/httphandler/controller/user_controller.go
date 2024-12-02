@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/L4B0MB4/PRYVT/identification/pkg/aggregates"
 	models "github.com/L4B0MB4/PRYVT/identification/pkg/models/query"
@@ -41,7 +42,7 @@ func (ctrl *UserController) GetToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	token, err := auth.CreateToken(userUuid)
+	token, err := auth.CreateToken(userUuid, 12*time.Hour)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -56,7 +57,7 @@ func (ctrl *UserController) RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	token, err := auth.CreateToken(userUuid)
+	token, err := auth.CreateToken(userUuid, 12*time.Hour)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

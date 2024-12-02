@@ -4,6 +4,7 @@ import (
 	"github.com/L4B0MB4/EVTSRC/pkg/models"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/aggregates"
 	"github.com/L4B0MB4/PRYVT/identification/pkg/query/store/repository"
+	"github.com/PRYVT/utils/pkg/interfaces"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 )
@@ -16,6 +17,10 @@ func NewUserEventHandler(userRepo *repository.UserRepository) *UserEventHandler 
 	return &UserEventHandler{
 		userRepo: userRepo,
 	}
+}
+
+func (eh *UserEventHandler) AddWebsocketConnection(conn interfaces.WebsocketConnecter) {
+	log.Warn().Msg("Websocket connection not yet supported for user events")
 }
 
 func (eh *UserEventHandler) HandleEvent(event models.Event) error {
