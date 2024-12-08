@@ -39,13 +39,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and push
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v6
         with:
           file: "./docker/command/Dockerfile"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_command:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_command:latest
+      - name: Build and push
+        if: github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/')
+        uses: docker/build-push-action@v6
+        with:
+          file: "./docker/command/Dockerfile"
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_command:${{ github.ref_name }}
       - name: Build without push
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/development' && !startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
@@ -66,13 +73,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and push
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v6
         with:
           file: "./docker/query/Dockerfile"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_query:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_query:latest
+      - name: Build and push
+        if: github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/tags/')
+        uses: docker/build-push-action@v6
+        with:
+          file: "./docker/query/Dockerfile"
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/pryvt_identification_query:${{ github.ref_name }}
       - name: Build without push
         if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/development' && !startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
